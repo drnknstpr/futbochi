@@ -78,6 +78,12 @@ async def show_squad(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     squad_message = "📋 Ваш состав:\n\n"
+    squad_message += "⚜️ Характеристики игроков:\n"
+    squad_message += "⚡️ Скорость\n"
+    squad_message += "🧠 Ментальность\n"
+    squad_message += "⚽️ Удар\n"
+    squad_message += "🛡 Защита\n\n"
+    
     squad_message += "🌟 Активные игроки:\n"
     for player in team.active_players:
         stats = player['stats']
@@ -137,6 +143,12 @@ async def toggle_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # Обновляем сообщение с составом
     squad_message = "📋 Ваш состав:\n\n"
+    squad_message += "⚜️ Характеристики игроков:\n"
+    squad_message += "⚡️ Скорость\n"
+    squad_message += "🧠 Ментальность\n"
+    squad_message += "⚽️ Удар\n"
+    squad_message += "🛡 Защита\n\n"
+    
     squad_message += "🌟 Активные игроки:\n"
     for player in team.active_players:
         stats = player['stats']
