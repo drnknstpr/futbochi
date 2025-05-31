@@ -1,6 +1,7 @@
 from typing import List, Dict
 import json
 from datetime import datetime, timedelta
+import random
 
 class Team:
     def __init__(self, name: str):
@@ -97,34 +98,50 @@ class Team:
         return True, msg
 
     def play_match(self, difficulty: str) -> tuple[bool, str, int, int]:
-        """Сыграть матч"""
+        """Играть матч"""
         if not self.can_play_match():
-            return False, "Подождите 1 час перед следующим матчем", 0, 0
+            return False, "Подождите перед следующим матчем", 0, 0
 
         if len(self.active_players) == 0:
-            return False, "Нужно выбрать активных игроков для матча", 0, 0
+            return False, "Сначала выберите активных игроков!", 0, 0
 
-        # Базовые награды за разные сложности
-        rewards = {
-            "easy": {"money": 100, "points": 1},
-            "medium": {"money": 300, "points": 3},
-            "hard": {"money": 500, "points": 5}
+        # Рассчитываем силу команды
+        team_power = self.get_team_power()
+        total_power = sum(team_power.values()) / 4  # Среднее значение всех характеристик
+
+        # Настройки сложности
+        difficulties = {
+            "easy": {"required_power": 50, "money": 200, "points": 1, "win_chance": 0.7},
+            "medium": {"required_power": 65, "money": 400, "points": 3, "win_chance": 0.5},
+            "hard": {"required_power": 80, "money": 600, "points": 5, "win_chance": 0.3}
         }
 
-        if difficulty not in rewards:
-            return False, "Неверная сложность матча", 0, 0
-
-        # Здесь будет логика расчёта результата матча
-        success = True  # В реальности будет зависеть от силы команды
+        settings = difficulties[difficulty]
         
-        if success:
-            self.money += rewards[difficulty]["money"]
-            self.points += rewards[difficulty]["points"]
+        # Увеличиваем шанс победы в зависимости от силы команды
+        power_bonus = max(0, (total_power - settings["required_power"]) / 100)
+        win_chance = min(0.9, settings["win_chance"] + power_bonus)
+
+        # Определяем исход матча
+        if random.random() < win_chance:
+            self.money += settings["money"]
+            self.points += settings["points"]
             self.last_match_time = datetime.now()
-            return True, "Победа!", rewards[difficulty]["money"], rewards[difficulty]["points"]
+            
+            # Бонус за большую разницу в силе
+            if total_power > settings["required_power"] + 20:
+                bonus_money = int((total_power - settings["required_power"]) * 2)
+                bonus_points = 1 if difficulty == "hard" else 0
+                self.money += bonus_money
+                self.points += bonus_points
+                return True, f"🏆 Победа!\n\n💪 Бонус за сильную команду:\n+{bonus_money} монет\n+{bonus_points} очков", settings["money"] + bonus_money, settings["points"] + bonus_points
+            
+            return True, "🏆 Победа!", settings["money"], settings["points"]
         else:
+            consolation_money = settings["money"] // 4
+            self.money += consolation_money
             self.last_match_time = datetime.now()
-            return True, "Поражение", 0, 0
+            return True, f"😔 Поражение\n\nУтешительный приз: {consolation_money} монет", consolation_money, 0
 
     def to_dict(self) -> Dict:
         """Конвертировать данные команды в словарь для сохранения"""

@@ -3,7 +3,7 @@
 import os
 import logging
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
@@ -60,9 +60,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🔥 Это Футбочи от Спортса и <a href='https://sirena.team'>SirenaBet</a>!\n\n"
         "Ты – хозяин команды! Покупай и продавай звезд, получай очки за выигранные матчи, поднимайся в лидерборде и забирай призы!\n\n"
         "Нажми «💼 Состав», чтобы посмотреть, кто в твоей команде, продать игроков и выбрать 3 основных.\n\n"
-        "Нажми «🎲 Купить игрока», чтобы получить рандомного игрока в команду. Цена – 500 денег.\n\n"
+        "Нажми «🎲 Купить игрока», чтобы получить рандомного игрока в команду. Первая покупка дня – 150 монет, остальные – 200 монет. Можно купить до 3 игроков в день!\n\n"
         "Нажми «💰 Поддержать клуб», чтобы дать команде денег или бесплатно добавить игрока.\n\n"
-        "Нажми «🏟 Играть матч», чтобы сыграть матч. Если выиграешь – получишь деньги и очки!\n\n"
+        "Нажми «🏟 Играть матч», чтобы сыграть матч. Если выиграешь – получишь деньги и очки! Чем сильнее твоя команда, тем больше награда.\n\n"
         "Нажми «🧑 Профиль», чтобы посмотреть бюджет, размер состава и характеристики состава.\n\n"
         "Чем сильнее команда, тем больше очков она набирает в матчах. 1 июля мы подведем итоги – три команды с наибольшим количеством очков получат призы от <a href='https://sirena.team'>SirenaBet</a>."
     )
@@ -233,8 +233,40 @@ async def buy_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Сначала начните игру командой /start")
         return
 
-    if team.money < 1000:
-        await update.message.reply_text("Недостаточно денег! Нужно 1000 монет.")
+    # Проверяем количество покупок за день
+    current_time = datetime.now()
+    if not hasattr(team, 'last_purchase_date'):
+        team.last_purchase_date = None
+        team.daily_purchases = 0
+    
+    # Сбрасываем счетчик покупок, если начался новый день
+    if team.last_purchase_date is None or team.last_purchase_date.date() != current_time.date():
+        team.daily_purchases = 0
+        team.last_purchase_date = current_time
+
+    # Проверяем лимит покупок
+    if team.daily_purchases >= 3:
+        next_reset = (current_time + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        hours_left = int((next_reset - current_time).total_seconds() / 3600)
+        minutes_left = int(((next_reset - current_time).total_seconds() % 3600) / 60)
+        
+        await update.message.reply_text(
+            f"⏳ Лимит покупок на сегодня исчерпан!\n"
+            f"Следующая покупка будет доступна через {hours_left}ч {minutes_left}мин\n\n"
+            f"💡 Пока можно поиграть матчи или поддержать клуб!"
+        )
+        return
+
+    # Определяем цену (первая покупка дня дешевле)
+    price = 150 if team.daily_purchases == 0 else 200
+
+    if team.money < price:
+        await update.message.reply_text(
+            f"💰 Недостаточно денег!\n"
+            f"Нужно: {price} монет\n"
+            f"У вас: {team.money} монет\n\n"
+            f"💡 Заработать деньги можно в матчах или поддержав клуб!"
+        )
         return
 
     players_db = storage.load_players_database()
@@ -246,18 +278,25 @@ async def buy_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if available_players:
         player = random.choice(available_players)
-        team.money -= 1000
+        team.money -= price
         team.add_player(player)
+        team.daily_purchases += 1
+        team.last_purchase_date = current_time
         storage.save_team(user_id, team)
         
+        purchases_left = 3 - team.daily_purchases
+        bonus_msg = "🎉 Бонус! Первая покупка дня – всего 150 монет!\n\n" if team.daily_purchases == 1 else ""
+        
         message = (
-            f"🎉 Вы купили {player['name']} ({player['rarity']})!\n"
-            f"Характеристики:\n"
+            f"✨ Новый игрок в команде! ✨\n\n"
+            f"{player['name']} ({player['rarity']})\n"
             f"⚡️ Скорость: {player['stats']['speed']}\n"
             f"🧠 Ментальность: {player['stats']['mentality']}\n"
             f"⚽️ Удар: {player['stats']['finishing']}\n"
             f"🛡 Защита: {player['stats']['defense']}\n\n"
-            f"Осталось денег: {team.money}"
+            f"{bonus_msg}"
+            f"💰 Осталось денег: {team.money}\n"
+            f"🎲 Осталось покупок сегодня: {purchases_left}"
         )
         await update.message.reply_text(message)
     else:
