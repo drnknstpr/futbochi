@@ -87,7 +87,7 @@ async def show_squad(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"⚽️ {stats['finishing']} 🛡 {stats['defense']}\n"
         )
     
-    squad_message += "\n📝 Запасные:\n"
+    squad_message += "\n📝 Полный состав:\n"
     bench = [p for p in team.squad if p not in team.active_players]
     for player in bench:
         stats = player['stats']
@@ -146,7 +146,7 @@ async def toggle_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"⚽️ {stats['finishing']} 🛡 {stats['defense']}\n"
         )
     
-    squad_message += "\n📝 Запасные:\n"
+    squad_message += "\n📝 Полный состав:\n"
     bench = [p for p in team.squad if p not in team.active_players]
     for player in bench:
         stats = player['stats']
