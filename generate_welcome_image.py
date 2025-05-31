@@ -1,65 +1,89 @@
 from PIL import Image, ImageDraw, ImageFont
 import os
+from math import sin, cos, radians
+
+def draw_diagonal_stripe(draw, x, y, width, height, angle, color, stripe_width=100):
+    """Рисует диагональную полосу заданного цвета"""
+    points = [
+        (x, y),
+        (x + stripe_width * cos(radians(angle)), y - stripe_width * sin(radians(angle))),
+        (x + width * cos(radians(angle)) + stripe_width * cos(radians(angle)), 
+         y + width * sin(radians(angle)) - stripe_width * sin(radians(angle))),
+        (x + width * cos(radians(angle)), y + width * sin(radians(angle)))
+    ]
+    draw.polygon(points, fill=color)
 
 # Создаем изображение
 width = 1200
-height = 630
-image = Image.new('RGB', (width, height), color='#1a1a2e')
+height = 1500  # Увеличиваем высоту для лучшей композиции
+image = Image.new('RGB', (width, height), color='#0B1741')  # Темно-синий фон
 
 # Получаем объект для рисования
 draw = ImageDraw.Draw(image)
 
+# Рисуем диагональные полосы
+stripes = [
+    {'angle': -30, 'color': '#E31B23', 'offset': 200},  # Красный
+    {'angle': -35, 'color': '#1DB954', 'offset': 400},  # Зеленый
+    {'angle': -25, 'color': '#6A0DAD', 'offset': 600},  # Фиолетовый
+    {'angle': -40, 'color': '#E31B23', 'offset': 800},  # Красный
+    {'angle': -20, 'color': '#1DB954', 'offset': 1000}  # Зеленый
+]
+
+for stripe in stripes:
+    draw_diagonal_stripe(
+        draw,
+        -200 + stripe['offset'],
+        0,
+        width + 400,
+        height,
+        stripe['angle'],
+        stripe['color'],
+        200
+    )
+
 # Загружаем шрифт (используем системный шрифт, если специальный не установлен)
 try:
-    title_font = ImageFont.truetype("Arial Bold.ttf", 120)
-    subtitle_font = ImageFont.truetype("Arial.ttf", 60)
+    title_font = ImageFont.truetype("Arial Bold.ttf", 250)
+    subtitle_font = ImageFont.truetype("Arial.ttf", 120)
 except:
     title_font = ImageFont.load_default()
     subtitle_font = ImageFont.load_default()
 
-# Добавляем градиентный фон
-for y in range(height):
-    r = int(26 + (y / height) * 20)
-    g = int(26 + (y / height) * 20)
-    b = int(46 + (y / height) * 30)
-    draw.line([(0, y), (width, y)], fill=(r, g, b))
+# Добавляем текст "FUT"
+fut_text = "FUT"
+fut_bbox = draw.textbbox((0, 0), fut_text, font=title_font)
+fut_width = fut_bbox[2] - fut_bbox[0]
+fut_x = (width - fut_width) // 2
+draw.text((fut_x, 100), fut_text, font=title_font, fill='#F5F5F5')
 
-# Рисуем футбольный мяч (упрощенно)
-ball_center = (width // 2, height // 2)
-ball_radius = 100
-draw.ellipse([
-    ball_center[0] - ball_radius,
-    ball_center[1] - ball_radius,
-    ball_center[0] + ball_radius,
-    ball_center[1] + ball_radius
-], fill='white', outline='black', width=3)
+# Добавляем текст "BO"
+bo_text = "BO"
+bo_bbox = draw.textbbox((0, 0), bo_text, font=title_font)
+bo_width = bo_bbox[2] - bo_bbox[0]
+bo_x = (width - bo_width) // 2
+draw.text((bo_x, 300), bo_text, font=title_font, fill='#F5F5F5')
 
-# Добавляем пятиугольники на мяч
-for i in range(5):
-    x = ball_center[0] + int(ball_radius * 0.6 * (i / 5))
-    y = ball_center[1] + int(ball_radius * 0.6 * (i / 5))
-    draw.regular_polygon((x, y, 20), 5, rotation=30, fill='black')
-
-# Добавляем заголовок
-title_text = "FUTBOCHI"
-title_bbox = draw.textbbox((0, 0), title_text, font=title_font)
-title_width = title_bbox[2] - title_bbox[0]
-title_x = (width - title_width) // 2
-draw.text((title_x, 100), title_text, font=title_font, fill='white')
+# Добавляем текст "CHI"
+chi_text = "CHI"
+chi_bbox = draw.textbbox((0, 0), chi_text, font=title_font)
+chi_width = chi_bbox[2] - chi_bbox[0]
+chi_x = (width - chi_width) // 2
+draw.text((chi_x, 500), chi_text, font=title_font, fill='#F5F5F5')
 
 # Добавляем логотип SirenaBet
-logo_text = "SirenaBet"
+logo_text = "SIRENABET"
 logo_bbox = draw.textbbox((0, 0), logo_text, font=subtitle_font)
 logo_width = logo_bbox[2] - logo_bbox[0]
 logo_x = (width - logo_width) // 2
-draw.text((logo_x, height - 200), logo_text, font=subtitle_font, fill='#ffd700')
+draw.text((logo_x, height - 300), logo_text, font=subtitle_font, fill='#FFD700')
 
 # Добавляем призыв к действию
-cta_text = "Собери топ-команду!"
+cta_text = "СОБЕРИ ТОП-КОМАНДУ!"
 cta_bbox = draw.textbbox((0, 0), cta_text, font=subtitle_font)
 cta_width = cta_bbox[2] - cta_bbox[0]
 cta_x = (width - cta_width) // 2
-draw.text((cta_x, height - 100), cta_text, font=subtitle_font, fill='white')
+draw.text((cta_x, height - 150), cta_text, font=subtitle_font, fill='#F5F5F5')
 
 # Создаем директорию media, если её нет
 os.makedirs('media', exist_ok=True)
