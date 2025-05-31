@@ -256,79 +256,68 @@ async def support_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text("Произошла ошибка. Попробуйте позже.")
 
 async def buy_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Купить игрока"""
-    user_id = str(update.effective_user.id)
+    """Покупка нового игрока"""
+    user = update.effective_user
+    user_id = str(user.id)
+    
     team = storage.get_team(user_id)
     if not team:
-        await update.message.reply_text("Сначала начните игру командой /start")
+        await update.message.reply_text("Сначала создайте команду с помощью /start")
         return
 
-    # Проверяем количество покупок за день
-    current_time = datetime.now()
-    if not hasattr(team, 'last_purchase_date'):
-        team.last_purchase_date = None
-        team.daily_purchases = 0
-    
-    # Сбрасываем счетчик покупок, если начался новый день
-    if team.last_purchase_date is None or team.last_purchase_date.date() != current_time.date():
-        team.daily_purchases = 0
-        team.last_purchase_date = current_time
-
-    # Проверяем лимит покупок
-    if team.daily_purchases >= 3:
-        next_reset = (current_time + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-        hours_left = int((next_reset - current_time).total_seconds() / 3600)
-        minutes_left = int(((next_reset - current_time).total_seconds() % 3600) / 60)
-        
+    if team.coins < PLAYER_COST:
         await update.message.reply_text(
-            f"⏳ Лимит покупок на сегодня исчерпан!\n"
-            f"Следующая покупка будет доступна через {hours_left}ч {minutes_left}мин\n\n"
-            f"💡 Пока можно поиграть матчи или поддержать клуб!"
-        )
-        return
-
-    # Фиксированная цена за любую покупку
-    price = 200
-
-    if team.money < price:
-        await update.message.reply_text(
-            f"💰 Недостаточно денег!\n"
-            f"Нужно: {price} монет\n"
-            f"У вас: {team.money} монет\n\n"
-            f"💡 Заработать деньги можно в матчах или поддержав клуб!"
+            f"Недостаточно монет для покупки игрока. Нужно: {PLAYER_COST} 🪙\nУ вас есть: {team.coins} 🪙"
         )
         return
 
     players_db = storage.load_players_database()
+    
+    # Определяем шансы выпадения для каждой редкости
+    rarity_chances = {
+        "common": 0.60,    # 60%
+        "rare": 0.25,      # 25%
+        "epic": 0.10,      # 10%
+        "legendary": 0.05  # 5%
+    }
+    
+    # Выбираем редкость на основе шансов
     rarity = random.choices(
-        list(players_db["rarity_chances"].keys()),
-        list(players_db["rarity_chances"].values())
+        list(rarity_chances.keys()),
+        weights=list(rarity_chances.values())
     )[0]
+    
+    # Фильтруем игроков по выбранной редкости
     available_players = [p for p in players_db["players"] if p["rarity"] == rarity]
     
-    if available_players:
-        player = random.choice(available_players)
-        team.money -= price
-        team.add_player(player)
-        team.daily_purchases += 1
-        team.last_purchase_date = current_time
-        storage.save_team(user_id, team)
-        
-        purchases_left = 3 - team.daily_purchases
-        
-        message = (
-            f"✨ Новый игрок в команде! ✨\n\n"
-            f"{player['name']} ({player['rarity']})\n"
-            f"⚡️ Скорость: {player['stats']['speed']}\n"
-            f"🧠 Ментальность: {player['stats']['mentality']}\n"
-            f"⚽️ Удар: {player['stats']['finishing']}\n"
-            f"🛡 Защита: {player['stats']['defense']}\n\n"
-            f"💰 Осталось денег: {team.money}\n"
-            f"🎲 Осталось покупок сегодня: {purchases_left}"
-        )
-        await update.message.reply_text(message)
-    else:
-        await update.message.reply_text("Не удалось найти подходящего игрока. Попробуйте позже.")
+    if not available_players:
+        await update.message.reply_text("Произошла ошибка при выборе игрока. Попробуйте еще раз.")
+        return
+
+    # Выбираем случайного игрока из доступных
+    new_player = random.choice(available_players)
+    
+    team.add_player(new_player)
+    team.coins -= PLAYER_COST
+    storage.save_team(user_id, team)
+
+    rarity_emoji = {
+        "common": "⚪️",
+        "rare": "🔵",
+        "epic": "🟣",
+        "legendary": "🟡"
+    }
+
+    await update.message.reply_text(
+        f"Вы купили нового игрока!\n\n"
+        f"🎯 {new_player['name']} ({rarity_emoji[new_player['rarity']]} {new_player['rarity'].capitalize()})\n\n"
+        f"Характеристики:\n"
+        f"⚡️ Скорость: {new_player['stats']['speed']}\n"
+        f"🧠 Мышление: {new_player['stats']['mentality']}\n"
+        f"⚽️ Удар: {new_player['stats']['finishing']}\n"
+        f"🛡 Защита: {new_player['stats']['defense']}\n\n"
+        f"Осталось монет: {team.coins} 🪙"
+    )
 
 async def play_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Играть матч"""
