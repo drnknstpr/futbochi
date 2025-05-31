@@ -268,9 +268,9 @@ async def buy_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Сначала создайте команду с помощью /start")
         return
 
-    if team.coins < PLAYER_COST:
+    if team.money < PLAYER_COST:
         await update.message.reply_text(
-            f"Недостаточно монет для покупки игрока. Нужно: {PLAYER_COST} 🪙\nУ вас есть: {team.coins} 🪙"
+            f"Недостаточно монет для покупки игрока. Нужно: {PLAYER_COST} 🪙\nУ вас есть: {team.money} 🪙"
         )
         return
 
