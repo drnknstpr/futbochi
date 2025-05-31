@@ -302,7 +302,7 @@ async def buy_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # Добавляем игрока в команду
     team.add_player(player)
-    team.coins -= PLAYER_COST
+    team.money -= PLAYER_COST
     storage.save_team(user_id, team)
     
     # Определяем эмодзи для редкости
@@ -321,7 +321,7 @@ async def buy_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message += f"🧠 Мышление: {player['stats']['mentality']}\n"
     message += f"⚽️ Удар: {player['stats']['finishing']}\n"
     message += f"🛡 Защита: {player['stats']['defense']}\n\n"
-    message += f"Осталось монет: {team.coins} 🪙"
+    message += f"Осталось монет: {team.money} 🪙"
     
     await update.message.reply_text(message)
 
