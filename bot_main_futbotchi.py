@@ -36,6 +36,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     user_id = str(user.id)
     
+    # Отправляем приветственное изображение
+    with open('media/welcome.png', 'rb') as photo:
+        await update.message.reply_photo(photo=photo)
+    
     team = storage.get_team(user_id)
     if not team:
         # Создаем новую команду
