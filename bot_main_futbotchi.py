@@ -291,33 +291,36 @@ async def buy_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
     available_players = [p for p in players_db["players"] if p["rarity"] == rarity]
     
     if not available_players:
-        await update.message.reply_text("Произошла ошибка при выборе игрока. Попробуйте еще раз.")
+        await update.message.reply_text("Ошибка: не удалось найти подходящего игрока")
         return
-
-    # Выбираем случайного игрока из доступных
-    new_player = random.choice(available_players)
     
-    team.add_player(new_player)
+    # Выбираем случайного игрока из доступных
+    player = random.choice(available_players)
+    
+    # Добавляем игрока в команду
+    team.add_player(player)
     team.coins -= PLAYER_COST
     storage.save_team(user_id, team)
-
+    
+    # Определяем эмодзи для редкости
     rarity_emoji = {
         "common": "⚪️",
         "rare": "🔵",
         "epic": "🟣",
         "legendary": "🟡"
     }
-
-    await update.message.reply_text(
-        f"Вы купили нового игрока!\n\n"
-        f"🎯 {new_player['name']} ({rarity_emoji[new_player['rarity']]} {new_player['rarity'].capitalize()})\n\n"
-        f"Характеристики:\n"
-        f"⚡️ Скорость: {new_player['stats']['speed']}\n"
-        f"🧠 Мышление: {new_player['stats']['mentality']}\n"
-        f"⚽️ Удар: {new_player['stats']['finishing']}\n"
-        f"🛡 Защита: {new_player['stats']['defense']}\n\n"
-        f"Осталось монет: {team.coins} 🪙"
-    )
+    
+    # Формируем сообщение о покупке
+    message = f"Поздравляем! Вы купили нового игрока:\n\n{rarity_emoji[player['rarity']]} {player['name']}\n"
+    message += f"Редкость: {player['rarity'].capitalize()}\n\n"
+    message += "Характеристики:\n"
+    message += f"⚡️ Скорость: {player['stats']['speed']}\n"
+    message += f"🧠 Мышление: {player['stats']['mentality']}\n"
+    message += f"⚽️ Удар: {player['stats']['finishing']}\n"
+    message += f"🛡 Защита: {player['stats']['defense']}\n\n"
+    message += f"Осталось монет: {team.coins} 🪙"
+    
+    await update.message.reply_text(message)
 
 async def play_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Играть матч"""
