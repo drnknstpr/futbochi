@@ -43,9 +43,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Добавляем стартовых игроков
         players_db = storage.load_players_database()
         starter_players = [
-            next(p for p in players_db["players"] if p["name"] == "Лукаку"),
-            next(p for p in players_db["players"] if p["name"] == "Мактоминей"),
-            next(p for p in players_db["players"] if p["name"] == "Криштиану Роналду")
+            next(p for p in players_db["players"] if p["name"] == "Эрлинг Холанд"),
+            next(p for p in players_db["players"] if p["name"] == "Килиан Мбаппе"),
+            next(p for p in players_db["players"] if p["name"] == "Джуд Беллингем")
         ]
         for player in starter_players:
             team.add_player(player)
@@ -69,8 +69,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             photo=photo,
             caption=welcome_message,
             reply_markup=MAIN_KEYBOARD,
-            parse_mode='HTML',
-            disable_web_page_preview=True
+            parse_mode='HTML'
         )
 
 async def show_squad(update: Update, context: ContextTypes.DEFAULT_TYPE):

@@ -1,0 +1,78 @@
+{
+  "name": "FC RM",
+  "money": 1000,
+  "points": 0,
+  "active_players": [
+    {
+      "id": 1,
+      "name": "Эрлинг Холанд",
+      "rarity": "legendary",
+      "stats": {
+        "speed": 4,
+        "mentality": 3,
+        "finishing": 5,
+        "defense": 1
+      }
+    },
+    {
+      "id": 2,
+      "name": "Килиан Мбаппе",
+      "rarity": "legendary",
+      "stats": {
+        "speed": 5,
+        "mentality": 3,
+        "finishing": 4,
+        "defense": 1
+      }
+    },
+    {
+      "id": 3,
+      "name": "Джуд Беллингем",
+      "rarity": "legendary",
+      "stats": {
+        "speed": 4,
+        "mentality": 4,
+        "finishing": 4,
+        "defense": 3
+      }
+    }
+  ],
+  "squad": [
+    {
+      "id": 1,
+      "name": "Эрлинг Холанд",
+      "rarity": "legendary",
+      "stats": {
+        "speed": 4,
+        "mentality": 3,
+        "finishing": 5,
+        "defense": 1
+      }
+    },
+    {
+      "id": 2,
+      "name": "Килиан Мбаппе",
+      "rarity": "legendary",
+      "stats": {
+        "speed": 5,
+        "mentality": 3,
+        "finishing": 4,
+        "defense": 1
+      }
+    },
+    {
+      "id": 3,
+      "name": "Джуд Беллингем",
+      "rarity": "legendary",
+      "stats": {
+        "speed": 4,
+        "mentality": 4,
+        "finishing": 4,
+        "defense": 3
+      }
+    }
+  ],
+  "last_support_time": null,
+  "last_match_time": null,
+  "strategy": null
+}
