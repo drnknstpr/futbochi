@@ -20,6 +20,9 @@ logging.basicConfig(
 load_dotenv()
 TOKEN = os.getenv('TELEGRAM_TOKEN')
 
+# Constants
+PLAYER_COST = 1000  # Стоимость покупки игрока
+
 # Debug print
 print(f"Using token: {TOKEN}")
 
