@@ -1,0 +1,120 @@
+{
+    "players": [
+        {
+            "id": 1,
+            "name": "Лукаку",
+            "rarity": "rare",
+            "stats": {
+                "speed": 3,
+                "mentality": 1,
+                "finishing": 2,
+                "defense": 0
+            }
+        },
+        {
+            "id": 2,
+            "name": "Мактоминей",
+            "rarity": "common",
+            "stats": {
+                "speed": 1,
+                "mentality": 3,
+                "finishing": 0,
+                "defense": 2
+            }
+        },
+        {
+            "id": 3,
+            "name": "Криштиану Роналду",
+            "rarity": "legendary",
+            "stats": {
+                "speed": 2,
+                "mentality": 3,
+                "finishing": 4,
+                "defense": 0
+            }
+        },
+        {
+            "id": 4,
+            "name": "Ван Дейк",
+            "rarity": "epic",
+            "stats": {
+                "speed": 2,
+                "mentality": 2,
+                "finishing": 0,
+                "defense": 4
+            }
+        },
+        {
+            "id": 5,
+            "name": "Де Брюйне",
+            "rarity": "legendary",
+            "stats": {
+                "speed": 2,
+                "mentality": 4,
+                "finishing": 3,
+                "defense": 1
+            }
+        },
+        {
+            "id": 6,
+            "name": "Холанд",
+            "rarity": "epic",
+            "stats": {
+                "speed": 3,
+                "mentality": 2,
+                "finishing": 4,
+                "defense": 0
+            }
+        },
+        {
+            "id": 7,
+            "name": "Модрич",
+            "rarity": "epic",
+            "stats": {
+                "speed": 2,
+                "mentality": 4,
+                "finishing": 2,
+                "defense": 2
+            }
+        },
+        {
+            "id": 8,
+            "name": "Рэшфорд",
+            "rarity": "rare",
+            "stats": {
+                "speed": 4,
+                "mentality": 2,
+                "finishing": 2,
+                "defense": 0
+            }
+        },
+        {
+            "id": 9,
+            "name": "Каземиро",
+            "rarity": "rare",
+            "stats": {
+                "speed": 1,
+                "mentality": 3,
+                "finishing": 0,
+                "defense": 4
+            }
+        },
+        {
+            "id": 10,
+            "name": "Фоден",
+            "rarity": "rare",
+            "stats": {
+                "speed": 3,
+                "mentality": 2,
+                "finishing": 2,
+                "defense": 1
+            }
+        }
+    ],
+    "rarity_chances": {
+        "common": 60,
+        "rare": 25,
+        "epic": 10,
+        "legendary": 5
+    }
+}
