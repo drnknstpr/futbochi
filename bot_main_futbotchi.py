@@ -36,10 +36,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     user_id = str(user.id)
     
-    # Отправляем приветственное изображение
-    with open('media/welcome.png', 'rb') as photo:
-        await update.message.reply_photo(photo=photo)
-    
     team = storage.get_team(user_id)
     if not team:
         # Создаем новую команду
@@ -67,7 +63,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Чем сильнее команда, тем больше очков она набирает в матчах. 1 июля мы подведем итоги – три команды с наибольшим количеством очков получат призы от <a href='https://sirena.team'>SirenaBet</a>."
     )
     
-    await update.message.reply_text(welcome_message, reply_markup=MAIN_KEYBOARD, parse_mode='HTML', disable_web_page_preview=True)
+    # Отправляем приветственное изображение вместе с сообщением
+    with open('media/welcome.png', 'rb') as photo:
+        await update.message.reply_photo(
+            photo=photo,
+            caption=welcome_message,
+            reply_markup=MAIN_KEYBOARD,
+            parse_mode='HTML',
+            disable_web_page_preview=True
+        )
 
 async def show_squad(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Показать состав команды"""

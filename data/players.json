@@ -2,119 +2,201 @@
     "players": [
         {
             "id": 1,
-            "name": "Лукаку",
-            "rarity": "rare",
-            "stats": {
-                "speed": 3,
-                "mentality": 1,
-                "finishing": 2,
-                "defense": 0
-            }
-        },
-        {
-            "id": 2,
-            "name": "Мактоминей",
-            "rarity": "common",
-            "stats": {
-                "speed": 1,
-                "mentality": 3,
-                "finishing": 0,
-                "defense": 2
-            }
-        },
-        {
-            "id": 3,
-            "name": "Криштиану Роналду",
+            "name": "Эрлинг Холанд",
             "rarity": "legendary",
             "stats": {
-                "speed": 2,
+                "speed": 4,
                 "mentality": 3,
-                "finishing": 4,
-                "defense": 0
-            }
-        },
-        {
-            "id": 4,
-            "name": "Ван Дейк",
-            "rarity": "epic",
-            "stats": {
-                "speed": 2,
-                "mentality": 2,
-                "finishing": 0,
-                "defense": 4
-            }
-        },
-        {
-            "id": 5,
-            "name": "Де Брюйне",
-            "rarity": "legendary",
-            "stats": {
-                "speed": 2,
-                "mentality": 4,
-                "finishing": 3,
+                "finishing": 5,
                 "defense": 1
             }
         },
         {
-            "id": 6,
-            "name": "Холанд",
-            "rarity": "epic",
+            "id": 2,
+            "name": "Килиан Мбаппе",
+            "rarity": "legendary",
+            "stats": {
+                "speed": 5,
+                "mentality": 3,
+                "finishing": 4,
+                "defense": 1
+            }
+        },
+        {
+            "id": 3,
+            "name": "Джуд Беллингем",
+            "rarity": "legendary",
+            "stats": {
+                "speed": 4,
+                "mentality": 4,
+                "finishing": 4,
+                "defense": 3
+            }
+        },
+        {
+            "id": 4,
+            "name": "Винисиус Жуниор",
+            "rarity": "legendary",
+            "stats": {
+                "speed": 5,
+                "mentality": 3,
+                "finishing": 4,
+                "defense": 1
+            }
+        },
+        {
+            "id": 5,
+            "name": "Кевин Де Брюйне",
+            "rarity": "legendary",
             "stats": {
                 "speed": 3,
-                "mentality": 2,
+                "mentality": 5,
                 "finishing": 4,
-                "defense": 0
+                "defense": 2
+            }
+        },
+        {
+            "id": 6,
+            "name": "Родри",
+            "rarity": "legendary",
+            "stats": {
+                "speed": 3,
+                "mentality": 5,
+                "finishing": 2,
+                "defense": 4
             }
         },
         {
             "id": 7,
-            "name": "Модрич",
-            "rarity": "epic",
+            "name": "Бернарду Силва",
+            "rarity": "legendary",
             "stats": {
-                "speed": 2,
+                "speed": 4,
                 "mentality": 4,
-                "finishing": 2,
+                "finishing": 3,
                 "defense": 2
             }
         },
         {
             "id": 8,
-            "name": "Рэшфорд",
-            "rarity": "rare",
+            "name": "Букайо Сака",
+            "rarity": "legendary",
             "stats": {
                 "speed": 4,
-                "mentality": 2,
-                "finishing": 2,
-                "defense": 0
+                "mentality": 3,
+                "finishing": 4,
+                "defense": 2
             }
         },
         {
             "id": 9,
-            "name": "Каземиро",
-            "rarity": "rare",
+            "name": "Гарри Кейн",
+            "rarity": "legendary",
             "stats": {
-                "speed": 1,
-                "mentality": 3,
-                "finishing": 0,
-                "defense": 4
+                "speed": 2,
+                "mentality": 4,
+                "finishing": 5,
+                "defense": 1
             }
         },
         {
             "id": 10,
-            "name": "Фоден",
-            "rarity": "rare",
+            "name": "Мохамед Салах",
+            "rarity": "legendary",
             "stats": {
-                "speed": 3,
-                "mentality": 2,
-                "finishing": 2,
+                "speed": 4,
+                "mentality": 3,
+                "finishing": 5,
                 "defense": 1
             }
+        },
+        {
+            "id": 11,
+            "name": "Виктор Осимхен",
+            "rarity": "epic",
+            "stats": {
+                "speed": 4,
+                "mentality": 3,
+                "finishing": 4,
+                "defense": 1
+            }
+        },
+        {
+            "id": 12,
+            "name": "Рафаэл Леау",
+            "rarity": "epic",
+            "stats": {
+                "speed": 4,
+                "mentality": 3,
+                "finishing": 3,
+                "defense": 1
+            }
+        },
+        {
+            "id": 13,
+            "name": "Лаутаро Мартинес",
+            "rarity": "epic",
+            "stats": {
+                "speed": 3,
+                "mentality": 4,
+                "finishing": 4,
+                "defense": 1
+            }
+        },
+        {
+            "id": 14,
+            "name": "Федерико Вальверде",
+            "rarity": "epic",
+            "stats": {
+                "speed": 4,
+                "mentality": 3,
+                "finishing": 3,
+                "defense": 3
+            }
+        },
+        {
+            "id": 15,
+            "name": "Эдуардо Камавинга",
+            "rarity": "epic",
+            "stats": {
+                "speed": 4,
+                "mentality": 3,
+                "finishing": 2,
+                "defense": 3
+            }
+        },
+        {
+            "id": 16,
+            "name": "Мартин Эдегор",
+            "rarity": "epic",
+            "stats": {
+                "speed": 3,
+                "mentality": 4,
+                "finishing": 3,
+                "defense": 2
+            }
+        },
+        {
+            "id": 17,
+            "name": "Деклан Райс",
+            "rarity": "epic",
+            "stats": {
+                "speed": 3,
+                "mentality": 4,
+                "finishing": 2,
+                "defense": 4
+            }
+        },
+        {
+            "id": 18,
+            "name": "Джек Грилиш",
+            "rarity": "epic",
+            "stats": {
+                "speed": 3,
+                "mentality": 3,
+                "finishing": 3,
+                "defense": 2
+            }
         }
-    ],
-    "rarity_chances": {
-        "common": 60,
-        "rare": 25,
-        "epic": 10,
-        "legendary": 5
-    }
-}
+    ]
+} 
