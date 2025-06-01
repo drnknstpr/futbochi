@@ -495,58 +495,51 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def main():
     """Запуск бота"""
+    # Настраиваем логирование
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.DEBUG
+    )
+    logger = logging.getLogger(__name__)
+    
+    # Создаем приложение
+    application = Application.builder().token(TOKEN).build()
+    
+    # Добавляем обработчики callback
+    application.add_handler(CallbackQueryHandler(toggle_player, pattern="^toggle_player_"))
+    application.add_handler(CallbackQueryHandler(support_callback, pattern="^support_"))
+    application.add_handler(CallbackQueryHandler(match_callback, pattern="^match_"))
+
+    # Добавляем обработчики команд
+    application.add_handler(CommandHandler("start", start))
+    
+    # Добавляем обработчики текста
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+
+    logger.info('Starting bot...')
+    
+    # Запускаем бота
+    await application.initialize()
+    await application.start()
+    await application.updater.start_polling()
+    
     try:
-        # Создаем приложение
-        application = Application.builder().token(TOKEN).build()
-        
-        # Настраиваем логирование
-        logging.basicConfig(
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            level=logging.DEBUG  # Изменено на DEBUG для более подробных логов
-        )
-        logger = logging.getLogger(__name__)
-        
-        # Очищаем предыдущие обновления при запуске
-        await application.bot.delete_webhook(drop_pending_updates=True)
-
-        # Добавляем обработчики callback до текстовых сообщений
-        application.add_handler(CallbackQueryHandler(toggle_player, pattern="^toggle_player_"))
-        application.add_handler(CallbackQueryHandler(support_callback, pattern="^support_"))
-        application.add_handler(CallbackQueryHandler(match_callback, pattern="^match_"))
-
-        # Добавляем обработчики команд
-        application.add_handler(CommandHandler("start", start))
-        
-        # Добавляем обработчики текста
-        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
-
-        # Инициализируем приложение
-        await application.initialize()
-        
-        # Запускаем бота
-        logger.info('Starting bot...')
-        await application.start()
-        
-        # Запускаем поллинг с явным указанием типов обновлений
-        logger.info('Starting polling...')
-        await application.run_polling(
-            allowed_updates=[
-                Update.MESSAGE,
-                Update.CALLBACK_QUERY
-            ],
-            drop_pending_updates=True
-        )
+        # Держим бота запущенным
+        await application.updater.running
     except Exception as e:
-        logger.error(f"Error running bot: {e}", exc_info=True)
-        raise e
+        logger.error(f"Error in main loop: {e}", exc_info=True)
     finally:
         logger.info('Stopping bot...')
         await application.stop()
 
-if __name__ == '__main__':
+def run_bot():
+    """Запуск бота с правильной обработкой событий"""
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         print('Bot stopped by user')
     except Exception as e:
         print(f'Bot stopped due to error: {e}')
+
+if __name__ == '__main__':
+    run_bot()
