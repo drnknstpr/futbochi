@@ -6,10 +6,17 @@ import random
 import asyncio
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 from storage import storage
 from models.team import Team
+from handlers.button_handlers import (
+    handle_toggle_player,
+    handle_support_action,
+    create_support_keyboard,
+    create_squad_keyboard,
+    format_squad_message
+)
 
 # Configure logging
 logging.basicConfig(
@@ -99,116 +106,9 @@ async def show_squad(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Сначала начните игру командой /start")
         return
 
-    squad_message = "📋 Ваш состав:\n\n"
-    squad_message += "⚜️ Характеристики игроков:\n"
-    squad_message += "⚡️ Скорость\n"
-    squad_message += "🧠 Ментальность\n"
-    squad_message += "⚽️ Удар\n"
-    squad_message += "🛡 Защита\n\n"
-    
-    squad_message += "🌟 Активные игроки:\n"
-    for player in team.active_players:
-        stats = player['stats']
-        squad_message += (
-            f"• {player['name']} ({player['rarity']})\n"
-            f"  ⚡️ {stats['speed']} 🧠 {stats['mentality']} "
-            f"⚽️ {stats['finishing']} 🛡 {stats['defense']}\n"
-        )
-    
-    squad_message += "\n📝 Полный состав:\n"
-    bench = [p for p in team.squad if p not in team.active_players]
-    for player in bench:
-        stats = player['stats']
-        squad_message += (
-            f"• {player['name']} ({player['rarity']})\n"
-            f"  ⚡️ {stats['speed']} 🧠 {stats['mentality']} "
-            f"⚽️ {stats['finishing']} 🛡 {stats['defense']}\n"
-        )
-
-    # Создаем кнопки для управления составом
-    keyboard = []
-    for player in team.squad:
-        is_active = player in team.active_players
-        status = "✅" if is_active else "➕"
-        keyboard.append([InlineKeyboardButton(
-            f"{status} {player['name']} ({player['rarity']})",
-            callback_data=f"toggle_player_{player['id']}"
-        )])
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(squad_message, reply_markup=reply_markup)
-
-async def toggle_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка нажатий на игроков в составе"""
-    logger = logging.getLogger(__name__)
-    query = update.callback_query
-    logger.info(f"Received callback query: {query.data}")
-    await query.answer()
-    
-    user_id = str(query.from_user.id)
-    team = storage.get_team(user_id)
-    if not team:
-        logger.warning(f"Team not found for user {user_id}")
-        await query.edit_message_text("Сначала начните игру командой /start")
-        return
-
-    player_id = int(query.data.split('_')[-1])
-    logger.info(f"Processing toggle for player {player_id}")
-    current_active_ids = [p['id'] for p in team.active_players]
-    
-    if player_id in current_active_ids:
-        current_active_ids.remove(player_id)
-        logger.info(f"Removed player {player_id} from active players")
-    else:
-        if len(current_active_ids) >= 3:
-            logger.warning(f"Cannot add player {player_id} - max active players reached")
-            await query.edit_message_text("Максимум 3 активных игрока!")
-            return
-        current_active_ids.append(player_id)
-        logger.info(f"Added player {player_id} to active players")
-    
-    team.set_active_players(current_active_ids)
-    storage.save_team(user_id, team)
-    
-    # Обновляем сообщение с составом
-    squad_message = "📋 Ваш состав:\n\n"
-    squad_message += "⚜️ Характеристики игроков:\n"
-    squad_message += "⚡️ Скорость\n"
-    squad_message += "🧠 Ментальность\n"
-    squad_message += "⚽️ Удар\n"
-    squad_message += "🛡 Защита\n\n"
-    
-    squad_message += "🌟 Активные игроки:\n"
-    for player in team.active_players:
-        stats = player['stats']
-        squad_message += (
-            f"• {player['name']} ({player['rarity']})\n"
-            f"  ⚡️ {stats['speed']} 🧠 {stats['mentality']} "
-            f"⚽️ {stats['finishing']} 🛡 {stats['defense']}\n"
-        )
-    
-    squad_message += "\n📝 Полный состав:\n"
-    bench = [p for p in team.squad if p not in team.active_players]
-    for player in bench:
-        stats = player['stats']
-        squad_message += (
-            f"• {player['name']} ({player['rarity']})\n"
-            f"  ⚡️ {stats['speed']} 🧠 {stats['mentality']} "
-            f"⚽️ {stats['finishing']} 🛡 {stats['defense']}\n"
-        )
-
-    # Обновляем кнопки
-    keyboard = []
-    for player in team.squad:
-        is_active = player in team.active_players
-        status = "✅" if is_active else "➕"
-        keyboard.append([InlineKeyboardButton(
-            f"{status} {player['name']} ({player['rarity']})",
-            callback_data=f"toggle_player_{player['id']}"
-        )])
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.edit_message_text(squad_message, reply_markup=reply_markup)
+    squad_message = format_squad_message(team)
+    keyboard = await create_squad_keyboard(team)
+    await update.message.reply_text(squad_message, reply_markup=keyboard)
 
 async def support_club(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Поддержать клуб"""
@@ -222,55 +122,11 @@ async def support_club(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Подождите 12 часов перед следующей поддержкой клуба")
         return
 
-    keyboard = [
-        [InlineKeyboardButton("💰 Дать денег (+500)", callback_data="support_money")],
-        [InlineKeyboardButton("👤 Подписать игрока", callback_data="support_player")],
-        [InlineKeyboardButton("📋 Выбрать стратегию", callback_data="support_strategy")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    keyboard = await create_support_keyboard()
     await update.message.reply_text(
         "Выберите действие для поддержки клуба:",
-        reply_markup=reply_markup
+        reply_markup=keyboard
     )
-
-async def support_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка действий поддержки клуба"""
-    logger = logging.getLogger(__name__)
-    query = update.callback_query
-    logger.info(f"Received support callback query: {query.data}")
-    await query.answer()
-    
-    user_id = str(query.from_user.id)
-    team = storage.get_team(user_id)
-    if not team:
-        logger.warning(f"Team not found for user {user_id}")
-        await query.edit_message_text("Сначала начните игру командой /start")
-        return
-
-    action = query.data.split('_')[1]
-    logger.info(f"Processing support action: {action}")
-    success, message = team.support_club(action)
-    
-    if success:
-        if action == "player":
-            # Даем случайного игрока
-            players_db = storage.load_players_database()
-            rarity = random.choices(
-                list(players_db["rarity_chances"].keys()),
-                list(players_db["rarity_chances"].values())
-            )[0]
-            available_players = [p for p in players_db["players"] if p["rarity"] == rarity]
-            if available_players:
-                player = random.choice(available_players)
-                team.add_player(player)
-                message = f"Вы подписали {player['name']} ({player['rarity']})!"
-            logger.info(f"Successfully processed support action {action}")
-        
-        storage.save_team(user_id, team)
-        await query.edit_message_text(message)
-    else:
-        logger.warning(f"Support action {action} failed")
-        await query.edit_message_text("Произошла ошибка. Попробуйте позже.")
 
 async def buy_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Покупка нового игрока"""
@@ -376,48 +232,6 @@ async def play_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text(message, reply_markup=reply_markup)
 
-async def match_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка выбора сложности матча"""
-    logger = logging.getLogger(__name__)
-    query = update.callback_query
-    logger.info(f"Received match callback query: {query.data}")
-    await query.answer()
-    
-    user_id = str(query.from_user.id)
-    team = storage.get_team(user_id)
-    if not team:
-        logger.warning(f"Team not found for user {user_id}")
-        await query.edit_message_text("Сначала начните игру командой /start")
-        return
-
-    difficulty = query.data.split('_')[1]
-    logger.info(f"Processing match with difficulty: {difficulty}")
-    success, commentary, money, points = team.play_match(difficulty)
-    
-    if success:
-        # Отправляем сообщения о ходе матча с небольшой задержкой
-        await query.edit_message_text(commentary[0])  # Показываем начало матча
-        
-        for i, message in enumerate(commentary[1:-1], 1):  # Показываем события матча
-            await asyncio.sleep(1)  # Задержка в 1 секунду между сообщениями
-            await context.bot.send_message(
-                chat_id=query.message.chat_id,
-                text=message
-            )
-        
-        # Показываем финальный результат
-        await asyncio.sleep(1)
-        await context.bot.send_message(
-            chat_id=query.message.chat_id,
-            text=commentary[-1]
-        )
-        
-        logger.info(f"Successfully completed match with difficulty {difficulty}")
-        storage.save_team(user_id, team)
-    else:
-        logger.warning(f"Match failed with difficulty {difficulty}")
-        await query.edit_message_text(commentary[0])
-
 async def show_top(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Показать таблицу лидеров"""
     teams = storage.get_all_teams()
@@ -465,81 +279,45 @@ async def show_events(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка текстовых сообщений"""
-    logger = logging.getLogger(__name__)
     text = update.message.text
-    logger.info(f"Received text message: {text}")
     
     if text == "💼 Состав":
-        logger.info("Processing '💼 Состав' command")
         await show_squad(update, context)
     elif text == "💰 Поддержать клуб":
-        logger.info("Processing '💰 Поддержать клуб' command")
         await support_club(update, context)
     elif text == "🎲 Купить игрока":
-        logger.info("Processing '🎲 Купить игрока' command")
         await buy_player(update, context)
     elif text == "🏟 Играть матч":
-        logger.info("Processing '🏟 Играть матч' command")
         await play_match(update, context)
     elif text == "🏆 Топ":
-        logger.info("Processing '🏆 Топ' command")
         await show_top(update, context)
     elif text == "🧑 Профиль":
-        logger.info("Processing '🧑 Профиль' command")
         await show_profile(update, context)
     elif text == "📅 События":
-        logger.info("Processing '📅 События' command")
         await show_events(update, context)
-    else:
-        logger.warning(f"Unhandled text message: {text}")
 
 async def main():
     """Запуск бота"""
-    # Настраиваем логирование
-    logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        level=logging.DEBUG
-    )
-    logger = logging.getLogger(__name__)
-    
-    # Создаем приложение
     application = Application.builder().token(TOKEN).build()
     
-    # Добавляем обработчики callback
-    application.add_handler(CallbackQueryHandler(toggle_player, pattern="^toggle_player_"))
-    application.add_handler(CallbackQueryHandler(support_callback, pattern="^support_"))
-    application.add_handler(CallbackQueryHandler(match_callback, pattern="^match_"))
-
-    # Добавляем обработчики команд
+    # Добавляем обработчики
     application.add_handler(CommandHandler("start", start))
     
-    # Добавляем обработчики текста
+    # Обработчики текстовых команд
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
-
-    logger.info('Starting bot...')
+    
+    # Обработчики кнопок
+    application.add_handler(CallbackQueryHandler(handle_toggle_player, pattern="^toggle_player_"))
+    application.add_handler(CallbackQueryHandler(handle_support_action, pattern="^support_"))
     
     # Запускаем бота
     await application.initialize()
     await application.start()
-    await application.updater.start_polling()
-    
-    try:
-        # Держим бота запущенным
-        await application.updater.running
-    except Exception as e:
-        logger.error(f"Error in main loop: {e}", exc_info=True)
-    finally:
-        logger.info('Stopping bot...')
-        await application.stop()
+    await application.run_polling()
 
 def run_bot():
-    """Запуск бота с правильной обработкой событий"""
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print('Bot stopped by user')
-    except Exception as e:
-        print(f'Bot stopped due to error: {e}')
+    """Функция для запуска бота"""
+    asyncio.run(main())
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_bot()
