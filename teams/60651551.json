@@ -1,19 +1,8 @@
 {
   "name": "FC RM",
-  "money": 1050,
+  "money": 550,
   "points": 0,
   "active_players": [
-    {
-      "id": 1,
-      "name": "Эрлинг Холанд",
-      "rarity": "legendary",
-      "stats": {
-        "speed": 4,
-        "mentality": 3,
-        "finishing": 5,
-        "defense": 1
-      }
-    },
     {
       "id": 2,
       "name": "Килиан Мбаппе",
@@ -34,6 +23,17 @@
         "mentality": 4,
         "finishing": 4,
         "defense": 3
+      }
+    },
+    {
+      "id": 1,
+      "name": "Эрлинг Холанд",
+      "rarity": "legendary",
+      "stats": {
+        "speed": 4,
+        "mentality": 3,
+        "finishing": 5,
+        "defense": 1
       }
     }
   ],
@@ -70,9 +70,42 @@
         "finishing": 4,
         "defense": 3
       }
+    },
+    {
+      "id": 19,
+      "name": "Маркус Рэшфорд",
+      "rarity": "rare",
+      "stats": {
+        "speed": 3,
+        "mentality": 2,
+        "finishing": 3,
+        "defense": 1
+      }
+    },
+    {
+      "id": 26,
+      "name": "Эбереши Эзе",
+      "rarity": "rare",
+      "stats": {
+        "speed": 3,
+        "mentality": 2,
+        "finishing": 2,
+        "defense": 1
+      }
+    },
+    {
+      "id": 24,
+      "name": "Джеймс Мэддисон",
+      "rarity": "rare",
+      "stats": {
+        "speed": 2,
+        "mentality": 3,
+        "finishing": 3,
+        "defense": 1
+      }
     }
   ],
-  "last_support_time": null,
+  "last_support_time": "2025-06-01T20:13:38.689238",
   "last_match_time": "2025-06-01T17:08:16.169520",
   "strategy": null
 }
