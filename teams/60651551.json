@@ -1,6 +1,6 @@
 {
   "name": "FC RM",
-  "money": 1000,
+  "money": 1050,
   "points": 0,
   "active_players": [
     {
@@ -73,6 +73,6 @@
     }
   ],
   "last_support_time": null,
-  "last_match_time": null,
+  "last_match_time": "2025-06-01T17:08:16.169520",
   "strategy": null
 }

@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import json
 from datetime import datetime, timedelta
 import random
@@ -15,17 +15,17 @@ class Team:
         self.strategy = None
 
     def can_play_match(self) -> bool:
-        """Проверка возможности играть матч (кулдаун 1 час)"""
+        """Проверка возможности играть матч (кулдаун 1 минута)"""
         if not self.last_match_time:
             return True
-        cooldown = timedelta(hours=1)
+        cooldown = timedelta(minutes=1)
         return datetime.now() - self.last_match_time >= cooldown
 
     def can_support(self) -> bool:
-        """Проверка возможности поддержать клуб (кулдаун 12 часов)"""
+        """Проверка возможности поддержать клуб (кулдаун 1 минута)"""
         if not self.last_support_time:
             return True
-        cooldown = timedelta(hours=12)
+        cooldown = timedelta(minutes=1)
         return datetime.now() - self.last_support_time >= cooldown
 
     def add_player(self, player: Dict) -> bool:
@@ -81,7 +81,7 @@ class Team:
     def support_club(self, action: str) -> tuple[bool, str]:
         """Поддержать клуб одним из действий"""
         if not self.can_support():
-            return False, "Подождите 12 часов перед следующей поддержкой клуба"
+            return False, "Подождите 1 минуту перед следующей поддержкой клуба"
 
         if action == "money":
             self.money += 500
@@ -97,14 +97,45 @@ class Team:
         self.last_support_time = datetime.now()
         return True, msg
 
-    def play_match(self, difficulty: str) -> tuple[bool, str, int, int]:
+    def get_match_commentary(self) -> Tuple[List[str], int]:
+        """Генерирует комментарии к матчу и считает голы"""
+        with open("data/match_data.json", "r", encoding="utf-8") as f:
+            match_data = json.load(f)
+
+        commentary = []
+        goals_scored = 0
+        
+        # Выбираем 3 случайных игрока для комментариев
+        players = random.sample(self.active_players, min(3, len(self.active_players)))
+        
+        for player in players:
+            # Определяем, будет ли действие позитивным или негативным
+            if random.random() < 0.7:  # 70% шанс позитивного действия
+                action = random.choice(match_data["match_actions"]["positive"])
+                if action["is_goal"]:
+                    goals_scored += 1
+            else:
+                action = random.choice(match_data["match_actions"]["negative"])
+            
+            commentary.append(f"{player['name']}... {action['action']}")
+        
+        return commentary, goals_scored
+
+    def play_match(self, difficulty: str) -> tuple[bool, List[str], int, int]:
         """Играть матч"""
         if not self.can_play_match():
-            return False, "Подождите перед следующим матчем", 0, 0
+            return False, ["Подождите перед следующим матчем"], 0, 0
 
         if len(self.active_players) == 0:
-            return False, "Сначала выберите активных игроков!", 0, 0
+            return False, ["Сначала выберите активных игроков!"], 0, 0
 
+        # Загружаем данные о командах
+        with open("data/match_data.json", "r", encoding="utf-8") as f:
+            match_data = json.load(f)
+        
+        # Выбираем случайного соперника
+        opponent = random.choice(match_data["opponent_teams"])
+        
         # Рассчитываем силу команды
         team_power = self.get_team_power()
         total_power = sum(team_power.values()) / 4  # Среднее значение всех характеристик
@@ -118,9 +149,16 @@ class Team:
 
         settings = difficulties[difficulty]
         
+        # Генерируем комментарии матча
+        commentary, goals_scored = self.get_match_commentary()
+        
         # Увеличиваем шанс победы в зависимости от силы команды
         power_bonus = max(0, (total_power - settings["required_power"]) / 100)
         win_chance = min(0.9, settings["win_chance"] + power_bonus)
+
+        # Добавляем начальное сообщение
+        match_commentary = [f"⚔️ {self.name} против {opponent}"]
+        match_commentary.extend(commentary)
 
         # Определяем исход матча
         if random.random() < win_chance:
@@ -134,14 +172,34 @@ class Team:
                 bonus_points = 1 if difficulty == "hard" else 0
                 self.money += bonus_money
                 self.points += bonus_points
-                return True, f"🏆 Победа!\n\n💪 Бонус за сильную команду:\n+{bonus_money} монет\n+{bonus_points} очков", settings["money"] + bonus_money, settings["points"] + bonus_points
+                
+                # Добавляем сообщение о победе
+                if goals_scored > 0:
+                    match_commentary.append(f"🏆 {self.name} обыграл «{opponent}» со счетом {goals_scored}:0!")
+                else:
+                    match_commentary.append(f"🏆 {self.name} обыграл «{opponent}» с минимальным счетом 1:0!")
+                match_commentary.append(f"💪 Бонус за сильную команду:\n+{bonus_money} монет\n+{bonus_points} очков")
+                
+                return True, match_commentary, settings["money"] + bonus_money, settings["points"] + bonus_points
             
-            return True, "🏆 Победа!", settings["money"], settings["points"]
+            # Добавляем сообщение о победе
+            if goals_scored > 0:
+                match_commentary.append(f"🏆 {self.name} обыграл «{opponent}» со счетом {goals_scored}:0!")
+            else:
+                match_commentary.append(f"🏆 {self.name} обыграл «{opponent}» с минимальным счетом 1:0!")
+            
+            return True, match_commentary, settings["money"], settings["points"]
         else:
             consolation_money = settings["money"] // 4
             self.money += consolation_money
             self.last_match_time = datetime.now()
-            return True, f"😔 Поражение\n\nУтешительный приз: {consolation_money} монет", consolation_money, 0
+            
+            # Добавляем сообщение о поражении
+            opponent_goals = random.randint(1, 3)
+            match_commentary.append(f"😔 {self.name} проиграл «{opponent}» со счетом {goals_scored}:{opponent_goals}")
+            match_commentary.append(f"Утешительный приз: {consolation_money} монет")
+            
+            return True, match_commentary, consolation_money, 0
 
     def to_dict(self) -> Dict:
         """Конвертировать данные команды в словарь для сохранения"""

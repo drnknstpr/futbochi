@@ -3,6 +3,7 @@
 import os
 import logging
 import random
+import asyncio
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
@@ -374,19 +375,29 @@ async def match_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     difficulty = query.data.split('_')[1]
-    success, result, money, points = team.play_match(difficulty)
+    success, commentary, money, points = team.play_match(difficulty)
     
     if success:
-        message = (
-            f"{result}\n"
-            f"Получено:\n"
-            f"💰 {money} монет\n"
-            f"🏆 {points} очков"
+        # Отправляем сообщения о ходе матча с небольшой задержкой
+        await query.edit_message_text(commentary[0])  # Показываем начало матча
+        
+        for i, message in enumerate(commentary[1:-1], 1):  # Показываем события матча
+            await asyncio.sleep(1)  # Задержка в 1 секунду между сообщениями
+            await context.bot.send_message(
+                chat_id=query.message.chat_id,
+                text=message
+            )
+        
+        # Показываем финальный результат
+        await asyncio.sleep(1)
+        await context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text=commentary[-1]
         )
+        
         storage.save_team(user_id, team)
-        await query.edit_message_text(message)
     else:
-        await query.edit_message_text(result)
+        await query.edit_message_text(commentary[0])
 
 async def show_top(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Показать таблицу лидеров"""
@@ -452,11 +463,14 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text == "📅 События":
         await show_events(update, context)
 
-def main():
+async def main():
     """Запуск бота"""
     # Создаем приложение
     application = Application.builder().token(TOKEN).build()
-
+    
+    # Очищаем предыдущие обновления при запуске
+    await application.bot.delete_webhook(drop_pending_updates=True)
+    
     # Добавляем обработчики команд
     application.add_handler(CommandHandler("start", start))
     
@@ -469,7 +483,7 @@ def main():
     application.add_handler(CallbackQueryHandler(match_callback, pattern="^match_"))
 
     # Запускаем бота
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    await application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

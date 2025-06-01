@@ -250,61 +250,61 @@
                 "speed": 3,
                 "mentality": 3,
                 "finishing": 2,
-                "defense": 2
+                "defense": 3
             }
         },
         {
             "id": 24,
             "name": "Джеймс Мэддисон",
-            "rarity": "common",
+            "rarity": "rare",
             "stats": {
                 "speed": 2,
-                "mentality": 2,
-                "finishing": 2,
+                "mentality": 3,
+                "finishing": 3,
                 "defense": 1
             }
         },
         {
             "id": 25,
             "name": "Ольи Уоткинс",
-            "rarity": "common",
+            "rarity": "rare",
             "stats": {
-                "speed": 2,
-                "mentality": 1,
-                "finishing": 2,
+                "speed": 3,
+                "mentality": 2,
+                "finishing": 3,
                 "defense": 1
             }
         },
         {
             "id": 26,
             "name": "Эбереши Эзе",
-            "rarity": "common",
+            "rarity": "rare",
             "stats": {
-                "speed": 2,
-                "mentality": 1,
-                "finishing": 1,
+                "speed": 3,
+                "mentality": 2,
+                "finishing": 2,
                 "defense": 1
             }
         },
         {
             "id": 27,
             "name": "Морган Гиббс-Уайт",
-            "rarity": "common",
+            "rarity": "rare",
             "stats": {
-                "speed": 1,
-                "mentality": 2,
-                "finishing": 1,
-                "defense": 1
+                "speed": 2,
+                "mentality": 3,
+                "finishing": 2,
+                "defense": 2
             }
         },
         {
             "id": 28,
             "name": "Энтони Гордон",
-            "rarity": "common",
+            "rarity": "rare",
             "stats": {
-                "speed": 2,
-                "mentality": 1,
-                "finishing": 1,
+                "speed": 3,
+                "mentality": 2,
+                "finishing": 2,
                 "defense": 1
             }
         },
@@ -329,226 +329,12 @@
                 "finishing": 5,
                 "defense": 1
             }
-        },
-        {
-            "id": 31,
-            "name": "Тони Кроос",
-            "rarity": "legendary",
-            "stats": {
-                "speed": 2,
-                "mentality": 5,
-                "finishing": 3,
-                "defense": 2
-            }
-        },
-        {
-            "id": 32,
-            "name": "Тибо Куртуа",
-            "rarity": "legendary",
-            "stats": {
-                "speed": 2,
-                "mentality": 4,
-                "finishing": 1,
-                "defense": 5
-            }
-        },
-        {
-            "id": 33,
-            "name": "Карим Бензема",
-            "rarity": "legendary",
-            "stats": {
-                "speed": 3,
-                "mentality": 4,
-                "finishing": 5,
-                "defense": 1
-            }
-        },
-        {
-            "id": 34,
-            "name": "Бруно Фернандеш",
-            "rarity": "epic",
-            "stats": {
-                "speed": 3,
-                "mentality": 4,
-                "finishing": 4,
-                "defense": 2
-            }
-        },
-        {
-            "id": 35,
-            "name": "Родриго",
-            "rarity": "epic",
-            "stats": {
-                "speed": 4,
-                "mentality": 3,
-                "finishing": 4,
-                "defense": 1
-            }
-        },
-        {
-            "id": 36,
-            "name": "Педри",
-            "rarity": "epic",
-            "stats": {
-                "speed": 3,
-                "mentality": 4,
-                "finishing": 3,
-                "defense": 2
-            }
-        },
-        {
-            "id": 37,
-            "name": "Гави",
-            "rarity": "epic",
-            "stats": {
-                "speed": 3,
-                "mentality": 4,
-                "finishing": 2,
-                "defense": 3
-            }
-        },
-        {
-            "id": 38,
-            "name": "Рафаэл Варан",
-            "rarity": "epic",
-            "stats": {
-                "speed": 4,
-                "mentality": 3,
-                "finishing": 1,
-                "defense": 4
-            }
-        },
-        {
-            "id": 39,
-            "name": "Кристиан Пулишич",
-            "rarity": "rare",
-            "stats": {
-                "speed": 4,
-                "mentality": 2,
-                "finishing": 3,
-                "defense": 1
-            }
-        },
-        {
-            "id": 40,
-            "name": "Мейсон Гринвуд",
-            "rarity": "rare",
-            "stats": {
-                "speed": 3,
-                "mentality": 2,
-                "finishing": 3,
-                "defense": 1
-            }
-        },
-        {
-            "id": 41,
-            "name": "Рис Джеймс",
-            "rarity": "rare",
-            "stats": {
-                "speed": 4,
-                "mentality": 3,
-                "finishing": 2,
-                "defense": 3
-            }
-        },
-        {
-            "id": 42,
-            "name": "Эмиль Смит-Роу",
-            "rarity": "rare",
-            "stats": {
-                "speed": 3,
-                "mentality": 3,
-                "finishing": 2,
-                "defense": 1
-            }
-        },
-        {
-            "id": 43,
-            "name": "Джейдон Санчо",
-            "rarity": "rare",
-            "stats": {
-                "speed": 4,
-                "mentality": 3,
-                "finishing": 3,
-                "defense": 1
-            }
-        },
-        {
-            "id": 44,
-            "name": "Кай Хаверц",
-            "rarity": "rare",
-            "stats": {
-                "speed": 3,
-                "mentality": 3,
-                "finishing": 3,
-                "defense": 2
-            }
-        },
-        {
-            "id": 45,
-            "name": "Мартин Эдегор",
-            "rarity": "rare",
-            "stats": {
-                "speed": 3,
-                "mentality": 4,
-                "finishing": 3,
-                "defense": 2
-            }
-        },
-        {
-            "id": 46,
-            "name": "Харви Эллиотт",
-            "rarity": "common",
-            "stats": {
-                "speed": 3,
-                "mentality": 2,
-                "finishing": 2,
-                "defense": 1
-            }
-        },
-        {
-            "id": 47,
-            "name": "Фабио Карвальо",
-            "rarity": "common",
-            "stats": {
-                "speed": 3,
-                "mentality": 2,
-                "finishing": 2,
-                "defense": 1
-            }
-        },
-        {
-            "id": 48,
-            "name": "Коул Палмер",
-            "rarity": "common",
-            "stats": {
-                "speed": 2,
-                "mentality": 2,
-                "finishing": 2,
-                "defense": 1
-            }
-        },
-        {
-            "id": 49,
-            "name": "Джейкоб Рэмзи",
-            "rarity": "common",
-            "stats": {
-                "speed": 2,
-                "mentality": 2,
-                "finishing": 1,
-                "defense": 2
-            }
-        },
-        {
-            "id": 50,
-            "name": "Карни Чуквуэмека",
-            "rarity": "common",
-            "stats": {
-                "speed": 3,
-                "mentality": 1,
-                "finishing": 2,
-                "defense": 1
-            }
         }
-    ]
+    ],
+    "rarity_chances": {
+        "common": 0.60,
+        "rare": 0.25,
+        "epic": 0.10,
+        "legendary": 0.05
+    }
 } 
