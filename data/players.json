@@ -197,6 +197,116 @@
                 "finishing": 3,
                 "defense": 2
             }
+        },
+        {
+            "id": 19,
+            "name": "Маркус Рэшфорд",
+            "rarity": "rare",
+            "stats": {
+                "speed": 3,
+                "mentality": 2,
+                "finishing": 3,
+                "defense": 1
+            }
+        },
+        {
+            "id": 20,
+            "name": "Фил Фоден",
+            "rarity": "rare",
+            "stats": {
+                "speed": 3,
+                "mentality": 3,
+                "finishing": 2,
+                "defense": 1
+            }
+        },
+        {
+            "id": 21,
+            "name": "Габриэл Мартинелли",
+            "rarity": "rare",
+            "stats": {
+                "speed": 3,
+                "mentality": 2,
+                "finishing": 2,
+                "defense": 1
+            }
+        },
+        {
+            "id": 22,
+            "name": "Мейсон Маунт",
+            "rarity": "rare",
+            "stats": {
+                "speed": 2,
+                "mentality": 3,
+                "finishing": 2,
+                "defense": 2
+            }
+        },
+        {
+            "id": 23,
+            "name": "Александр Арнольд",
+            "rarity": "rare",
+            "stats": {
+                "speed": 3,
+                "mentality": 3,
+                "finishing": 2,
+                "defense": 2
+            }
+        },
+        {
+            "id": 24,
+            "name": "Джеймс Мэддисон",
+            "rarity": "common",
+            "stats": {
+                "speed": 2,
+                "mentality": 2,
+                "finishing": 2,
+                "defense": 1
+            }
+        },
+        {
+            "id": 25,
+            "name": "Ольи Уоткинс",
+            "rarity": "common",
+            "stats": {
+                "speed": 2,
+                "mentality": 1,
+                "finishing": 2,
+                "defense": 1
+            }
+        },
+        {
+            "id": 26,
+            "name": "Эбереши Эзе",
+            "rarity": "common",
+            "stats": {
+                "speed": 2,
+                "mentality": 1,
+                "finishing": 1,
+                "defense": 1
+            }
+        },
+        {
+            "id": 27,
+            "name": "Морган Гиббс-Уайт",
+            "rarity": "common",
+            "stats": {
+                "speed": 1,
+                "mentality": 2,
+                "finishing": 1,
+                "defense": 1
+            }
+        },
+        {
+            "id": 28,
+            "name": "Энтони Гордон",
+            "rarity": "common",
+            "stats": {
+                "speed": 2,
+                "mentality": 1,
+                "finishing": 1,
+                "defense": 1
+            }
         }
     ]
 } 
