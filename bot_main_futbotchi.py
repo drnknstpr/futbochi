@@ -471,7 +471,6 @@ async def main():
         
         # Очищаем предыдущие обновления при запуске
         await application.bot.delete_webhook(drop_pending_updates=True)
-        await application.initialize()
 
         # Добавляем обработчики команд
         application.add_handler(CommandHandler("start", start))
@@ -484,10 +483,13 @@ async def main():
         application.add_handler(CallbackQueryHandler(support_callback, pattern="^support_"))
         application.add_handler(CallbackQueryHandler(match_callback, pattern="^match_"))
 
+        # Инициализируем приложение
+        await application.initialize()
+        
         # Запускаем бота
         print('Starting bot...')
         await application.start()
-        await application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+        await application.run_polling(allowed_updates=Update.ALL_TYPES)
     except Exception as e:
         print(f"Error running bot: {e}")
         raise e
