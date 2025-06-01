@@ -140,25 +140,32 @@ async def show_squad(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def toggle_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка нажатий на игроков в составе"""
+    logger = logging.getLogger(__name__)
     query = update.callback_query
+    logger.info(f"Received callback query: {query.data}")
     await query.answer()
     
     user_id = str(query.from_user.id)
     team = storage.get_team(user_id)
     if not team:
+        logger.warning(f"Team not found for user {user_id}")
         await query.edit_message_text("Сначала начните игру командой /start")
         return
 
     player_id = int(query.data.split('_')[-1])
+    logger.info(f"Processing toggle for player {player_id}")
     current_active_ids = [p['id'] for p in team.active_players]
     
     if player_id in current_active_ids:
         current_active_ids.remove(player_id)
+        logger.info(f"Removed player {player_id} from active players")
     else:
         if len(current_active_ids) >= 3:
+            logger.warning(f"Cannot add player {player_id} - max active players reached")
             await query.edit_message_text("Максимум 3 активных игрока!")
             return
         current_active_ids.append(player_id)
+        logger.info(f"Added player {player_id} to active players")
     
     team.set_active_players(current_active_ids)
     storage.save_team(user_id, team)
@@ -228,16 +235,20 @@ async def support_club(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def support_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка действий поддержки клуба"""
+    logger = logging.getLogger(__name__)
     query = update.callback_query
+    logger.info(f"Received support callback query: {query.data}")
     await query.answer()
     
     user_id = str(query.from_user.id)
     team = storage.get_team(user_id)
     if not team:
+        logger.warning(f"Team not found for user {user_id}")
         await query.edit_message_text("Сначала начните игру командой /start")
         return
 
     action = query.data.split('_')[1]
+    logger.info(f"Processing support action: {action}")
     success, message = team.support_club(action)
     
     if success:
@@ -253,10 +264,12 @@ async def support_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 player = random.choice(available_players)
                 team.add_player(player)
                 message = f"Вы подписали {player['name']} ({player['rarity']})!"
+            logger.info(f"Successfully processed support action {action}")
         
         storage.save_team(user_id, team)
         await query.edit_message_text(message)
     else:
+        logger.warning(f"Support action {action} failed")
         await query.edit_message_text("Произошла ошибка. Попробуйте позже.")
 
 async def buy_player(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -365,16 +378,20 @@ async def play_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def match_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка выбора сложности матча"""
+    logger = logging.getLogger(__name__)
     query = update.callback_query
+    logger.info(f"Received match callback query: {query.data}")
     await query.answer()
     
     user_id = str(query.from_user.id)
     team = storage.get_team(user_id)
     if not team:
+        logger.warning(f"Team not found for user {user_id}")
         await query.edit_message_text("Сначала начните игру командой /start")
         return
 
     difficulty = query.data.split('_')[1]
+    logger.info(f"Processing match with difficulty: {difficulty}")
     success, commentary, money, points = team.play_match(difficulty)
     
     if success:
@@ -395,8 +412,10 @@ async def match_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=commentary[-1]
         )
         
+        logger.info(f"Successfully completed match with difficulty {difficulty}")
         storage.save_team(user_id, team)
     else:
+        logger.warning(f"Match failed with difficulty {difficulty}")
         await query.edit_message_text(commentary[0])
 
 async def show_top(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -446,22 +465,33 @@ async def show_events(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка текстовых сообщений"""
+    logger = logging.getLogger(__name__)
     text = update.message.text
+    logger.info(f"Received text message: {text}")
     
     if text == "💼 Состав":
+        logger.info("Processing '💼 Состав' command")
         await show_squad(update, context)
     elif text == "💰 Поддержать клуб":
+        logger.info("Processing '💰 Поддержать клуб' command")
         await support_club(update, context)
     elif text == "🎲 Купить игрока":
+        logger.info("Processing '🎲 Купить игрока' command")
         await buy_player(update, context)
     elif text == "🏟 Играть матч":
+        logger.info("Processing '🏟 Играть матч' command")
         await play_match(update, context)
     elif text == "🏆 Топ":
+        logger.info("Processing '🏆 Топ' command")
         await show_top(update, context)
     elif text == "🧑 Профиль":
+        logger.info("Processing '🧑 Профиль' command")
         await show_profile(update, context)
     elif text == "📅 События":
+        logger.info("Processing '📅 События' command")
         await show_events(update, context)
+    else:
+        logger.warning(f"Unhandled text message: {text}")
 
 async def main():
     """Запуск бота"""
@@ -472,7 +502,7 @@ async def main():
         # Настраиваем логирование
         logging.basicConfig(
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            level=logging.INFO
+            level=logging.DEBUG  # Изменено на DEBUG для более подробных логов
         )
         logger = logging.getLogger(__name__)
         
@@ -498,6 +528,7 @@ async def main():
         await application.start()
         
         # Запускаем поллинг с явным указанием типов обновлений
+        logger.info('Starting polling...')
         await application.run_polling(
             allowed_updates=[
                 Update.MESSAGE,
