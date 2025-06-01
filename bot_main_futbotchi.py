@@ -465,25 +465,40 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def main():
     """Запуск бота"""
-    # Создаем приложение
-    application = Application.builder().token(TOKEN).build()
-    
-    # Очищаем предыдущие обновления при запуске
-    await application.bot.delete_webhook(drop_pending_updates=True)
-    
-    # Добавляем обработчики команд
-    application.add_handler(CommandHandler("start", start))
-    
-    # Добавляем обработчики текста
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
-    
-    # Добавляем обработчики callback
-    application.add_handler(CallbackQueryHandler(toggle_player, pattern="^toggle_player_"))
-    application.add_handler(CallbackQueryHandler(support_callback, pattern="^support_"))
-    application.add_handler(CallbackQueryHandler(match_callback, pattern="^match_"))
+    try:
+        # Создаем приложение
+        application = Application.builder().token(TOKEN).build()
+        
+        # Очищаем предыдущие обновления при запуске
+        await application.bot.delete_webhook(drop_pending_updates=True)
+        await application.initialize()
 
-    # Запускаем бота
-    await application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+        # Добавляем обработчики команд
+        application.add_handler(CommandHandler("start", start))
+        
+        # Добавляем обработчики текста
+        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+        
+        # Добавляем обработчики callback
+        application.add_handler(CallbackQueryHandler(toggle_player, pattern="^toggle_player_"))
+        application.add_handler(CallbackQueryHandler(support_callback, pattern="^support_"))
+        application.add_handler(CallbackQueryHandler(match_callback, pattern="^match_"))
+
+        # Запускаем бота
+        print('Starting bot...')
+        await application.start()
+        await application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+    except Exception as e:
+        print(f"Error running bot: {e}")
+        raise e
+    finally:
+        print('Stopping bot...')
+        await application.stop()
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print('Bot stopped by user')
+    except Exception as e:
+        print(f'Bot stopped due to error: {e}')
